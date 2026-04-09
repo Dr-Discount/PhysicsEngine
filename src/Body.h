@@ -10,8 +10,10 @@ struct Body {
     float size;
     float mass = 1;
     float restutuion = 0.9f;
+    float gravityScale = 1.0f;
+    float damping = 0.0f;
 
-	void ExplicitEular(Body& body, float DT);
+	void ExplicitEular(float DT);
 	void SemiImplicitEular(float DT);
 	void Step(float DT);
 	void AddForce(Vector2 force);

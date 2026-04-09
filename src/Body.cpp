@@ -1,13 +1,15 @@
 #include "Body.h"
 
-void Body::ExplicitEular(Body& body, float DT) {
-	body.position += body.velocity * DT;
-	body.velocity += body.acceleration * DT;
+void Body::ExplicitEular(float DT) {
+	position += velocity * DT;
+	velocity += acceleration * DT;
+	//velocity *= (1.0f / (1.0f + damping));
 }
 
 void Body::SemiImplicitEular(float DT) {
 	velocity += acceleration * DT;
 	position += velocity * DT;
+	velocity *= (1.0f / (1.0f + (damping * DT)));
 }
 
 void Body::Step(float DT) {

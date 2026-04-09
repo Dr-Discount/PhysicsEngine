@@ -1,16 +1,12 @@
 #pragma once
-#include "raymath.h"
-#include <resource_dir.h>
+#include "raylib.h"
 
-struct Random {
-
-	float GetRandomFloat() {
+	inline float GetRandomFloat() {
 		return GetRandomValue(0, 10000) / (float)10000;
 	}
-	float GetRandomFloat(float Max) {
-		return GetRandomValue(0, Max);
+	inline float GetRandomFloat(float Max) {
+		return GetRandomFloat() * Max;
 	}
-	float GetRandomFloat(float Min, float Max) {
-		return GetRandomValue(Min, Max);
+	inline float GetRandomFloat(float Min, float Max) {
+		return GetRandomFloat() * (Max - Min);
 	}
-};

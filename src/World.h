@@ -4,21 +4,20 @@
 #include <vector>
 #include <chrono>
 #include "Random.h"
+#include "Collision.h"
 
 class World {
-	std::chrono::high_resolution_clock::time_point previousTime = std::chrono::high_resolution_clock::now();
-	std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<float> elapsed = currentTime - previousTime;
-
 	std::vector<Body> bodies;
+	std::vector<class Effector*> effectors;
+	std::vector<Contact> contacts;
 	Vector2 gravity{ 0, 9.81f };
 
 public:
 	World() {}
-	float DT = 0.0f;
-	Random random;
 
+	std::vector<Body>& GetBodies() { return bodies; }
 	void Step(float DT);
 	void Draw();
 	void AddBody(const Body& body);
+	void AddEffector(class Effector* effector);
 };
