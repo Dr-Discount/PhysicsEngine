@@ -13,13 +13,20 @@ void Body::SemiImplicitEular(float DT) {
 }
 
 void Body::Step(float DT) {
+	if (bodyType == BodyType::Static)
+		return;
 	SemiImplicitEular(DT);
 }
 
 void Body::AddForce(Vector2 force) {
+	if (bodyType == BodyType::Static)
+		return;
 	acceleration += force / mass;
 }
 
 void Body::Draw() const {
-	DrawCircleV(position, size, RED);
+	if(bodyType == BodyType::Dynamic)
+		DrawCircleV(position, size, RED);
+	else
+		DrawCircleV(position, size, YELLOW);
 }

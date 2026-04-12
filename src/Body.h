@@ -2,6 +2,11 @@
 #include <raylib.h>
 #include <raymath.h>
 
+enum BodyType {
+    Dynamic,
+    Static
+};
+
 struct Body {
     Vector2 position;
     Vector2 velocity;
@@ -12,6 +17,7 @@ struct Body {
     float restutuion = 0.9f;
     float gravityScale = 1.0f;
     float damping = 0.0f;
+    BodyType bodyType = BodyType::Dynamic;
 
 	void ExplicitEular(float DT);
 	void SemiImplicitEular(float DT);

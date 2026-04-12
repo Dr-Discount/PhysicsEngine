@@ -11,24 +11,36 @@ void World::Step(float DT) {
 		direction.x = cosf(angle);
 		direction.y = sinf(angle);
 
-		body.velocity = direction * GetRandomFloat() * 500;
+		body.velocity = direction * GetRandomFloat() * 200;
 		body.acceleration = Vector2{ 0,0 };
-		body.size = GetRandomValue(2, 50);
-		body.damping = 0.3f;
+		body.size = GetRandomValue(10, 40);
+		body.damping = 0.2f;
 		body.mass = body.size;
+		body.bodyType = BodyType::Dynamic;
+		body.restutuion = 0.5f;
+
+		AddBody(body);
+	} else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))) {
+		Body body;
+		body.position = GetMousePosition();
+		body.size = GetRandomValue(10, 40);
+		body.mass = body.size;
+		body.bodyType = BodyType::Static;
 
 		AddBody(body);
 	}
 
-	contacts.clear();
-	Contact::CreateContacts(bodies, contacts);
-	Contact::SeparateContacts(contacts);
+	// reset accelerations
+	for (auto& body : bodies) body.acceleration = Vector2{ 0, 0 };
 
+	// apply effectors (forces) before integrating
+	for (auto& effector : effectors) effector->Apply(bodies);
+
+	// integrate bodies
+	for (auto& body : bodies) body.Step(DT);
+
+	// simple world bounds (position correction + velocity bounce)
 	for (auto& body : bodies) {
-		body.acceleration = Vector2{ 0, 0 };
-
-		//body.AddForce(gravity * 100);
-
 		if (body.position.x + body.size > GetScreenWidth()) {
 			body.position.x = GetScreenWidth() - body.size;
 			body.velocity.x *= -body.restutuion;
@@ -45,18 +57,21 @@ void World::Step(float DT) {
 			body.position.y = GetScreenHeight() - body.size;
 			body.velocity.y *= -body.restutuion;
 		}
-
 	}
 
+	// collisions: detect -> resolve velocities -> positional correction
+	contacts.clear();
+	Contact::CreateContacts(bodies, contacts);
+	Contact::ResolveContacts(contacts);
+	Contact::SeparateContacts(contacts);
+
+	// right-mouse creates a point effector — consider creating only on press to avoid accumulating effectors
 	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
 		Vector2 position = GetMousePosition();
 		
 		Effector* effector = new PointEffector(position, 150.0f, 7500.0f);
 		AddEffector(effector);
 	}
-
-	for (auto& effector : effectors) effector->Apply(bodies);
-	for (auto& body : bodies) body.Step(DT);
 }
 
 void World::Draw() {

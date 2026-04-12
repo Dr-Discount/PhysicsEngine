@@ -59,6 +59,7 @@
     <ClCompile Include="src\Collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpp src\Collision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\icon.ico">

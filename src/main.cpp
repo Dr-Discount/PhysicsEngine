@@ -38,7 +38,7 @@ int main ()
 	float timeAccum = 0.0f;
 	float fixedTimeStep = 1.0f / 60.0f;
 
-	world.AddEffector(new GravitationalEffector(20000.0f));
+	world.AddEffector(new GravitationalEffector(10000.0f));
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
@@ -48,11 +48,12 @@ int main ()
 		DT = elapsed.count();
 		previousTime = currentTime;
 
-		//update
+		// update
 		timeAccum += DT;
-		if (timeAccum > fixedTimeStep) {
+		// Run as many fixed steps as needed and subtract the accumulator.
+		while (timeAccum >= fixedTimeStep) {
 			world.Step(fixedTimeStep);
-			timeAccum - fixedTimeStep;
+			timeAccum -= fixedTimeStep;
 		}
 
 		// drawing
