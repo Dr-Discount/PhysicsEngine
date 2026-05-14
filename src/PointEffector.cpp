@@ -1,15 +1,17 @@
 #include "PointEffector.h"
 
-void PointEffector::Apply(std::vector<Body>& bodies) {
+void PointEffector::Apply(std::vector<Body>& ibodies) {
+	std::vector<Body*> bodies;
+	CollectBodiesInside(ibodies, bodies);
+
 	for (auto& body : bodies) {
-		Vector2 direction = position - body.position;
-		if (Vector2Length(direction) < size) {
-			Vector2 force = Vector2Normalize(direction) * -forceMagitude;
-			body.AddForce(force);
-		}
+		Vector2 direction = position - body->position;
+		Vector2 force = Vector2Normalize(direction) * -forceMagitude;
+		body->AddForce(force);
 	}
 }
 
 void PointEffector::Draw(){
-	DrawCircleLinesV(position, size, GREEN);
+	Effector::Draw();
+	DrawCircleV(position, size, Fade(RED, 0.1f));
 }

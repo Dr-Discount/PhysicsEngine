@@ -3,33 +3,6 @@
 #include "PointEffector.h"
 
 void World::Step(float DT) {
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
-		Body body;
-		body.position = GetMousePosition();
-		float angle = GetRandomFloat() * (2 * PI);
-		Vector2 direction;
-		direction.x = cosf(angle);
-		direction.y = sinf(angle);
-
-		body.velocity = direction * GetRandomFloat() * 200;
-		body.acceleration = Vector2{ 0,0 };
-		body.size = GetRandomValue(10, 40);
-		body.damping = 0.2f;
-		body.mass = body.size;
-		body.bodyType = BodyType::Dynamic;
-		body.restutuion = 0.5f;
-
-		AddBody(body);
-	} else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))) {
-		Body body;
-		body.position = GetMousePosition();
-		body.size = GetRandomValue(10, 40);
-		body.mass = body.size;
-		body.bodyType = BodyType::Static;
-
-		AddBody(body);
-	}
-
 	// reset accelerations
 	for (auto& body : bodies) body.acceleration = Vector2{ 0, 0 };
 

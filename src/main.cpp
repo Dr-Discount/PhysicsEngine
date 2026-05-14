@@ -13,6 +13,8 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include "Body.h"
 #include "World.h"
 #include "GravitationalEffector.h"
+#include "../AreaEffector.h"
+#include "DragEffector.h"
 
 World world = World();
 
@@ -37,23 +39,58 @@ int main ()
 
 	float timeAccum = 0.0f;
 	float fixedTimeStep = 1.0f / 60.0f;
+	bool simulate = true;
 
-	world.AddEffector(new GravitationalEffector(10000.0f));
+	world.AddEffector(new GravitationalEffector(Vector2{ 900, 600 }, 200, 100000.0f));
+	world.AddEffector(new AreaEffector(Vector2{ 200, 200 }, 200, 180, 100000.0f));
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
-		currentTime = std::chrono::high_resolution_clock::now();
-		elapsed = currentTime - previousTime;
-		DT = elapsed.count();
-		previousTime = currentTime;
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
+			Body body;
+			body.position = GetMousePosition();
+			float angle = GetRandomFloat() * (2 * PI);
+			Vector2 direction;
+			direction.x = cosf(angle);
+			direction.y = sinf(angle);
 
-		// update
-		timeAccum += DT;
-		// Run as many fixed steps as needed and subtract the accumulator.
-		while (timeAccum >= fixedTimeStep) {
-			world.Step(fixedTimeStep);
-			timeAccum -= fixedTimeStep;
+			body.velocity = direction * GetRandomFloat() * 200;
+			body.acceleration = Vector2{ 0,0 };
+			body.size = GetRandomValue(10, 40);
+			body.damping = 0.2f;
+			body.mass = body.size;
+			body.bodyType = BodyType::Dynamic;
+			body.restutuion = 0.99f;
+
+			world.AddBody(body);
+		}
+		else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))) {
+			Body body;
+			body.position = GetMousePosition();
+			body.size = GetRandomValue(10, 40);
+			body.mass = body.size;
+			body.bodyType = BodyType::Static;
+
+			world.AddBody(body);
+		}
+
+
+		if (IsKeyPressed(KEY_SPACE)) { simulate = !simulate; }
+
+		if (simulate) {
+			currentTime = std::chrono::high_resolution_clock::now();
+			elapsed = currentTime - previousTime;
+			DT = elapsed.count();
+			previousTime = currentTime;
+
+			// update
+			timeAccum += DT;
+			// Run as many fixed steps as needed and subtract the accumulator.
+			while (timeAccum >= fixedTimeStep) {
+				world.Step(fixedTimeStep);
+				timeAccum -= fixedTimeStep;
+			}
 		}
 
 		// drawing
