@@ -43,7 +43,6 @@ void World::Step(float DT) {
 }
 
 void World::Draw() {
-	DrawCircleV(GetMousePosition(), 5, BLUE);
 	for (auto& effector : effectors) effector->Draw();
 	for (const auto& body : bodies) body.Draw();
 }

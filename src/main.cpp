@@ -88,7 +88,7 @@ int main ()
 	// Create the window and OpenGL context
 	InitWindow(1400, 1000, "Hello Raylib");
 	state = InitGuiPhysics();
-	WorldCamera world_camera(Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }, 40);
+	WorldCamera world_camera(Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }, 400);
 	world.SetBounds(world_camera.ScreenToWorld({ 0, (float)GetScreenHeight() }), world_camera.ScreenToWorld({ (float)GetScreenWidth(), 0 }));
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
@@ -163,6 +163,7 @@ int main ()
 
 		world_camera.Begin();
 		world.Draw();
+		DrawCircleV(world_camera.ScreenToWorld(GetMousePosition()), 5, BLUE);
 		world_camera.End();
 		GuiPhysics(&state);
 		
