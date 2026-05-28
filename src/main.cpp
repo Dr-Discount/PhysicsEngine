@@ -15,8 +15,65 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include "GravitationalEffector.h"
 #include "../AreaEffector.h"
 #include "DragEffector.h"
+#include "PointEffector.h"
+#include "world_camera.h"
+
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+#define GUI_PHYSICS_IMPLEMENTATION
+#pragma warning ( push )
+#pragma warning ( disable : 4576)
+#include "gui_physics.h"
+#pragma warning ( pop )
 
 World world = World();
+GuiPhysicsState state;
+
+
+
+void AddEffector(World& world, WorldCamera& camera)
+{
+	Vector2 position = camera.ScreenToWorld(GetMousePosition());
+
+	Effector* effector = nullptr;
+	switch ((EffectorType)state.EffectorTypeActive)
+	{
+	case(EffectorType::Drag):
+		world.AddEffector(new DragEffector(position, state.EffectorSizeValue, 200));
+		break;
+	case(EffectorType::Point):
+		world.AddEffector(new PointEffector(position, state.EffectorSizeValue, state.EffectorForceValue));
+		break;
+	case(EffectorType::Gravitation):
+		world.AddEffector(new GravitationalEffector(position, state.EffectorSizeValue, state.EffectorForceValue));
+		break;
+	case(EffectorType::Area):
+		world.AddEffector(new AreaEffector(position, state.EffectorSizeValue, state.EffectorAngleValue, state.EffectorForceValue));
+		break;
+	}
+
+	if (effector) world.AddEffector(effector);
+}
+
+void AddBody(World& world, WorldCamera& camera)
+{
+	Body body;
+	body.position = camera.ScreenToWorld(GetMousePosition());
+	float angle = GetRandomFloat() * (2 * PI);
+	Vector2 direction;
+	direction.x = cosf(angle);
+	direction.y = sinf(angle);
+
+	body.velocity = direction * GetRandomFloat() * 200;
+	body.acceleration = Vector2{ 0,0 };
+	body.size = state.BodySizeValue;
+	body.damping = state.BodyDampingValue;
+	body.mass = state.BodyMassValue;
+	body.bodyType = (BodyType)state.BodyTypeActive;
+	body.restutuion = state.BodyRestitutionValue;
+
+	world.AddBody(body);
+}
 
 int main ()
 {
@@ -29,7 +86,10 @@ int main ()
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(1280, 800, "Hello Raylib");
+	InitWindow(1400, 1000, "Hello Raylib");
+	state = InitGuiPhysics();
+	WorldCamera world_camera(Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }, 40);
+	world.SetBounds(world_camera.ScreenToWorld({ 0, (float)GetScreenHeight() }), world_camera.ScreenToWorld({ (float)GetScreenWidth(), 0 }));
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
@@ -39,46 +99,40 @@ int main ()
 
 	float timeAccum = 0.0f;
 	float fixedTimeStep = 1.0f / 60.0f;
-	bool simulate = true;
 
-	world.AddEffector(new GravitationalEffector(Vector2{ 900, 600 }, 200, 100000.0f));
-	world.AddEffector(new AreaEffector(Vector2{ 200, 200 }, 200, 180, 100000.0f));
+	//world.AddEffector(new GravitationalEffector(Vector2{ 900, 600 }, 200, 100000.0f));
+	//world.AddEffector(new AreaEffector(Vector2{ 200, 200 }, 200, 180, 100000.0f));
+	//world.AddEffector(new DragEffector(Vector2{ 900, 200 }, 200, 100));
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
-			Body body;
-			body.position = GetMousePosition();
-			float angle = GetRandomFloat() * (2 * PI);
-			Vector2 direction;
-			direction.x = cosf(angle);
-			direction.y = sinf(angle);
-
-			body.velocity = direction * GetRandomFloat() * 200;
-			body.acceleration = Vector2{ 0,0 };
-			body.size = GetRandomValue(10, 40);
-			body.damping = 0.2f;
-			body.mass = body.size;
-			body.bodyType = BodyType::Dynamic;
-			body.restutuion = 0.99f;
-
-			world.AddBody(body);
+		if (IsKeyPressed(KEY_TAB)) {
+			state.PhysicsPanelActive = !state.PhysicsPanelActive;
 		}
-		else if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))) {
-			Body body;
-			body.position = GetMousePosition();
-			body.size = GetRandomValue(10, 40);
-			body.mass = body.size;
-			body.bodyType = BodyType::Static;
+		bool DontSpawn = CheckCollisionPointRec(GetMousePosition(), Rectangle{ state.anchor02.x, state.anchor02.y, 304, 664}) && state.PhysicsPanelActive;
 
-			world.AddBody(body);
+		if (!DontSpawn) {
+			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
+				AddBody(world, world_camera);
+			}
+			if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))) {
+				Body body;
+				body.position = GetMousePosition();
+				body.size = GetRandomValue(10, 40);
+				body.mass = body.size;
+				body.bodyType = BodyType::Static;
+
+				world.AddBody(body);
+			}
+			if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+				AddEffector(world, world_camera);
+			}
 		}
 
+		World::SetGravity({ 0, -state.GravityValue });
 
-		if (IsKeyPressed(KEY_SPACE)) { simulate = !simulate; }
-
-		if (simulate) {
+		if (state.SimulateActive) {
 			currentTime = std::chrono::high_resolution_clock::now();
 			elapsed = currentTime - previousTime;
 			DT = elapsed.count();
@@ -107,7 +161,10 @@ int main ()
 		// draw our texture to the screen
 		DrawTexture(wabbit, 400, 200, WHITE);
 
+		world_camera.Begin();
 		world.Draw();
+		world_camera.End();
+		GuiPhysics(&state);
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();

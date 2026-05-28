@@ -13,5 +13,5 @@ void DragEffector::Apply(std::vector<Body>& ibodies) {
 
 void DragEffector::Draw() {
 	Effector::Draw();
-	DrawCircleV(position, size, Fade(BLUE, 0.1f));
+	DrawCircleV(position, size, Fade(BLUE, 0.3f));
 }

@@ -13,5 +13,5 @@ void AreaEffector::Apply(std::vector<Body>& ibodies) {
 
 void AreaEffector::Draw() {
 	Effector::Draw();
-	DrawCircleV(position, size, Fade(YELLOW, 0.1f));
+	DrawCircleV(position, size, Fade(YELLOW, 0.3f));
 }

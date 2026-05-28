@@ -11,5 +11,5 @@ public:
 	void Apply(std::vector<Body>& bodies) override;
 	void Draw() override;
 private:
-	float drag
+	float drag;
 };

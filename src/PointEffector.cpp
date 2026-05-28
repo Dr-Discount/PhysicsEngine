@@ -13,5 +13,5 @@ void PointEffector::Apply(std::vector<Body>& ibodies) {
 
 void PointEffector::Draw(){
 	Effector::Draw();
-	DrawCircleV(position, size, Fade(RED, 0.1f));
+	DrawCircleV(position, size, Fade(RED, 0.3f));
 }

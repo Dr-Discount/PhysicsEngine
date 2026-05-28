@@ -2,6 +2,8 @@
 #include "Effector.h"
 #include "PointEffector.h"
 
+Vector2 World::gravity = { 0, 9.81f };
+
 void World::Step(float DT) {
 	// reset accelerations
 	for (auto& body : bodies) body.acceleration = Vector2{ 0, 0 };
@@ -10,24 +12,25 @@ void World::Step(float DT) {
 	for (auto& effector : effectors) effector->Apply(bodies);
 
 	// integrate bodies
+	for (auto& body : bodies) body.AddForce(gravity * body.gravityScale);
 	for (auto& body : bodies) body.Step(DT);
 
 	// simple world bounds (position correction + velocity bounce)
 	for (auto& body : bodies) {
-		if (body.position.x + body.size > GetScreenWidth()) {
-			body.position.x = GetScreenWidth() - body.size;
+		if (body.position.x + body.size > boundsMax.x) {
+			body.position.x = boundsMax.x - body.size;
 			body.velocity.x *= -body.restutuion;
 		}
-		if (body.position.x - body.size < 0) {
-			body.position.x = 0 + body.size;
+		if (body.position.x - body.size < boundsMin.x) {
+			body.position.x = boundsMin.x + body.size;
 			body.velocity.x *= -body.restutuion;
 		}
-		if (body.position.y - body.size < 0) {
-			body.position.y = 0 + body.size;
+		if (body.position.y - body.size < boundsMin.y) {
+			body.position.y = boundsMin.y + body.size;
 			body.velocity.y *= -body.restutuion;
 		}
-		if (body.position.y + body.size > GetScreenHeight()) {
-			body.position.y = GetScreenHeight() - body.size;
+		if (body.position.y + body.size > boundsMax.y) {
+			body.position.y = boundsMax.y - body.size;
 			body.velocity.y *= -body.restutuion;
 		}
 	}
@@ -37,14 +40,6 @@ void World::Step(float DT) {
 	Contact::CreateContacts(bodies, contacts);
 	Contact::ResolveContacts(contacts);
 	Contact::SeparateContacts(contacts);
-
-	// right-mouse creates a point effector — consider creating only on press to avoid accumulating effectors
-	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
-		Vector2 position = GetMousePosition();
-		
-		Effector* effector = new PointEffector(position, 150.0f, 7500.0f);
-		AddEffector(effector);
-	}
 }
 
 void World::Draw() {

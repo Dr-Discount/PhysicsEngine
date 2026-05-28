@@ -37,5 +37,5 @@ void GravitationalEffector::Apply(std::vector<Body>& ibodies)
 void GravitationalEffector::Draw()
 {
 	Effector::Draw();
-	DrawCircleV(position, size, Fade(GREEN, 0.1f));
+	DrawCircleV(position, size, Fade(GREEN, 0.3f));
 }
