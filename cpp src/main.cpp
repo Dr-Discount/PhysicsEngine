@@ -112,8 +112,21 @@ int main ()
 		if (IsKeyPressed(KEY_TAB)) {
 			state.PhysicsPanelActive = !state.PhysicsPanelActive;
 		}
-		bool DontSpawn = CheckCollisionPointRec(GetMousePosition(), Rectangle{ state.anchor02.x, state.anchor02.y, 304, 664}) && state.PhysicsPanelActive;
+		bool DontSpawn = CheckCollisionPointRec(GetMousePosition(), Rectangle{ state.anchor02.x, state.anchor02.y, 304, 664 }) && state.PhysicsPanelActive;
 
+		// Always sample the clock every frame to avoid large deltas when pausing/resuming
+		currentTime = std::chrono::high_resolution_clock::now();
+		elapsed = currentTime - previousTime;
+		float frameDT = elapsed.count();
+
+		// If paused, consume the time and reset accumulator so no hidden steps occur later
+		if (!state.SimulateActive) {
+			previousTime = currentTime;
+			timeAccum = 0.0f;
+		}
+
+		// Only allow inputs that modify the simulation when SimulateActive is true.
+		// If you prefer editing while paused, move or remove this guard accordingly.
 		if (!DontSpawn) {
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
 				AddBody(world, world_camera);
@@ -124,45 +137,49 @@ int main ()
 			if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) {
 				AddEffector(world, world_camera);
 			}
-			if (selectedBody) {
-				if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
-					if (IsKeyDown(KEY_LEFT_CONTROL)) {
-						Vector2 position = world_camera.ScreenToWorld(GetMousePosition());
+			if (selectedBody)
+			{
+				if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+				{
+					Vector2 position = world_camera.ScreenToWorld(GetMousePosition());
+					if (IsKeyDown(KEY_LEFT_CONTROL))
+					{
 						Vector2 force = Spring::GetSpringForce(position, selectedBody->position, 1.0f, 3.0f);
 						selectedBody->AddForce(force);
-
-						DrawLineV(world_camera.WorldToScreen(position), world_camera.WorldToScreen(selectedBody->position), WHITE);
 					}
-					else {
+					else
+					{
 						connectedBody = world.GetBodyIntersect(world_camera.ScreenToWorld(GetMousePosition()));
 					}
+					DrawLineV(world_camera.WorldToScreen(position), world_camera.WorldToScreen(selectedBody->position), WHITE);
 				}
-				else {
-					if (selectedBody && connectedBody) {
+				else
+				{
+					if (selectedBody && connectedBody)
+					{
 						float distance = Vector2Distance(selectedBody->position, connectedBody->position);
-						world.AddSpring(*selectedBody, *connectedBody, distance, state.SpringStiffnessValue, state.SpringDampingValue);
+						world.AddSpring(*selectedBody, *connectedBody, distance, state.SpringStiffnessValue);
 					}
+
 					selectedBody = nullptr;
 					connectedBody = nullptr;
 				}
-			} 
+			}
 		}
-
+		// Update GUI-driven parameters always so sliders take effect immediately (visual only while paused)
 		World::SetGravity({ 0, -state.GravityValue });
+		world.SetSpringMultiplier(state.SpringStiffnessValue);
 
+		// Fixed timestep stepping only when simulation active.
 		if (state.SimulateActive) {
-			currentTime = std::chrono::high_resolution_clock::now();
-			elapsed = currentTime - previousTime;
-			DT = elapsed.count();
-			previousTime = currentTime;
-
-			// update
-			timeAccum += DT;
+			// advance time accumulator with the frame delta we sampled earlier
+			timeAccum += frameDT;
 			// Run as many fixed steps as needed and subtract the accumulator.
 			while (timeAccum >= fixedTimeStep) {
 				world.Step(fixedTimeStep);
 				timeAccum -= fixedTimeStep;
 			}
+			previousTime = currentTime;
 		}
 
 		// drawing
@@ -182,15 +199,15 @@ int main ()
 		world_camera.Begin();
 		world.Draw();
 		DrawCircleLinesV(world_camera.ScreenToWorld(GetMousePosition()), state.BodySizeValue, BLUE);
-		
+
 		if (selectedBody) {
 			DrawCircleLinesV(selectedBody->position, selectedBody->size * 1.05f, RED);
 		}
-		
+
 		world_camera.End();
 
 		GuiPhysics(&state);
-		
+
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();
 	}

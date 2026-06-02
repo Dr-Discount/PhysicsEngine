@@ -18,6 +18,8 @@ struct Body {
     float restutuion = 0.9f;
     float gravityScale = 10.0f;
     float damping = 0.0f;
+    Color color = RED;
+
     BodyType bodyType = BodyType::Dynamic;
 
 	void ExplicitEular(float DT);

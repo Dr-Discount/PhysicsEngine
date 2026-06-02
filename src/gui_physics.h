@@ -127,10 +127,10 @@ GuiPhysicsState InitGuiPhysics(void)
     state.BodyDampingValue = 0.1f;
     state.BodyTypeEditMode = false;
     state.BodyTypeActive = 0;
-    state.SpringStiffnessValue = 0.0f;
-    state.SpringDampingValue = 0.0f;
+    state.SpringStiffnessValue = 1.0f;
+    state.SpringDampingValue = 1.0f;
     state.SpringAutoLengthChecked = false;
-    state.SpringLengthValue = 0.0f;
+    state.SpringLengthValue = 1.0f;
     state.EffectorTypeEditMode = false;
     state.EffectorTypeActive = 0;
     state.EffectorSizeValue = 0.0f;
@@ -154,15 +154,15 @@ void GuiPhysics(GuiPhysicsState *state)
 
     if (state->PhysicsPanelActive)
     {
-        state->PhysicsPanelActive = !GuiWindowBox((Rectangle){ state->anchor02.x + 0, state->anchor02.y + 0, 312, 544 }, "PHYSICS CONTROLS");
+        state->PhysicsPanelActive = !GuiWindowBox((Rectangle){ state->anchor02.x + 0, state->anchor02.y + 0, 312, 744 }, "PHYSICS CONTROLS");
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 112, 184, 16 }, "MASS", NULL, &state->BodyMassValue, 1, 20);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 88, 184, 16 }, "SIZE", NULL, &state->BodySizeValue, 5, 50);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 136, 184, 16 }, "GRAVITY", NULL, &state->BodyGravityValue, 0, 100);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 160, 184, 16 }, "BOUNCE", NULL, &state->BodyRestitutionValue, 0, 1);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 184, 184, 16 }, "DAMPING", NULL, &state->BodyDampingValue, 0, 100);
         GuiGroupBox((Rectangle){ state->anchor02.x + 8, state->anchor02.y + 256, 296, 120 }, "SPRING");
-        GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 272, 184, 16 }, "STIFFNESS", NULL, &state->SpringStiffnessValue, 0, 100);
-        GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 296, 184, 16 }, "DAMPING", NULL, &state->SpringDampingValue, 0, 100);
+        GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 272, 184, 16 }, "STIFFNESS", NULL, &state->SpringStiffnessValue, 1, 100);
+        GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 296, 184, 16 }, "DAMPING", NULL, &state->SpringDampingValue, 0, 1);
         GuiCheckBox((Rectangle){ state->anchor02.x + 104, state->anchor02.y + 344, 16, 16 }, "AUTO LENGTH", &state->SpringAutoLengthChecked);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 320, 184, 16 }, "LENGTH", NULL, &state->SpringLengthValue, 0, 100);
         GuiGroupBox((Rectangle){ state->anchor02.x + 8, state->anchor02.y + 392, 296, 136 }, "EFFECTOR");
@@ -173,14 +173,11 @@ void GuiPhysics(GuiPhysicsState *state)
         GuiGroupBox((Rectangle){ state->anchor02.x + 8, state->anchor02.y + 32, 296, 208 }, "BODY");
         if (GuiDropdownBox((Rectangle){ state->anchor02.x + 32, state->anchor02.y + 48, 240, 24 }, "DYNAMIC;KINEMATIC;STATIC", &state->BodyTypeActive, state->BodyTypeEditMode)) state->BodyTypeEditMode = !state->BodyTypeEditMode;
         if (GuiDropdownBox((Rectangle){ state->anchor02.x + 32, state->anchor02.y + 408, 240, 24 }, "GRAVITATION;POINT;AREA;DRAG", &state->EffectorTypeActive, state->EffectorTypeEditMode)) state->EffectorTypeEditMode = !state->EffectorTypeEditMode;
-    }
-    if (state->WorldBoxActive)
-    {
-        state->WorldBoxActive = !GuiWindowBox((Rectangle){ state->anchor01.x + 0, state->anchor01.y + 0, 312, 152 }, "WORLD");
-        GuiToggle((Rectangle){ state->anchor01.x + 24, state->anchor01.y + 112, 264, 24 }, "SIMULATE", &state->SimulateActive);
-        GuiSlider((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 64, 184, 16 }, "GRAVITY", NULL, &state->GravityValue, -20, 30);
-        GuiSliderBar((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 40, 184, 16 }, "FPS", NULL, &state->FPSValue, 0, 100);
-        GuiCheckBox((Rectangle){ state->anchor01.x + 112, state->anchor01.y + 88, 16, 16 }, "SHOW DEBUG", &state->ShowDebugChecked);
+        GuiGroupBox((Rectangle){ state->anchor02.x + 8, state->anchor02.y + 540, 296, 158 }, "Other");
+        GuiToggle((Rectangle){ state->anchor02.x + 25, state->anchor01.y + 130, 264, 24 }, "SIMULATE", &state->SimulateActive);
+        GuiSlider((Rectangle){ state->anchor02.x + 80, state->anchor01.y + 75, 184, 16 }, "GRAVITY", NULL, &state->GravityValue, -9.81, 30);
+        GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor01.y + 50, 184, 16 }, "FPS", NULL, &state->FPSValue, 0, 100);
+        GuiCheckBox((Rectangle){ state->anchor02.x + 80, state->anchor01.y + 95, 16, 16 }, "SHOW DEBUG", &state->ShowDebugChecked);
     }
     
     GuiUnlock();

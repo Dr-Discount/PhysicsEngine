@@ -312,6 +312,7 @@
     <ClInclude Include="src\PointEffector.h" />
     <ClInclude Include="src\Random.h" />
     <ClInclude Include="src\raygui.h" />
+    <ClInclude Include="src\Spring.h" />
     <ClInclude Include="src\World.h" />
     <ClInclude Include="src\world_camera.h" />
   </ItemGroup>
@@ -319,6 +320,7 @@
     <ClCompile Include="AreaEffector.cpp" />
     <ClCompile Include="cpp src\Collision.cpp" />
     <ClCompile Include="cpp src\DragEffector.cpp" />
+    <ClCompile Include="cpp src\main.cpp" />
     <ClCompile Include="Effector.cpp" />
     <ClCompile Include="src\Body.cpp" />
     <ClCompile Include="src\Collision.cpp" />
@@ -326,6 +328,7 @@
     <ClCompile Include="src\GravitationalEffector.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\PointEffector.cpp" />
+    <ClCompile Include="src\Spring.cpp" />
     <ClCompile Include="src\World.cpp" />
     <ClCompile Include="src\world_camera.cpp" />
   </ItemGroup>

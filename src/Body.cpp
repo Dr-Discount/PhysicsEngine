@@ -25,8 +25,5 @@ void Body::AddForce(Vector2 force) {
 }
 
 void Body::Draw() const {
-	if(bodyType == BodyType::Dynamic)
-		DrawCircleV(position, size, RED);
-	else
-		DrawCircleV(position, size, YELLOW);
+	DrawCircleV(position, size, color);
 }

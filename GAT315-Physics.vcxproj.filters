@@ -54,6 +54,9 @@
     <ClInclude Include="src\world_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Spring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -88,6 +91,10 @@
     <ClCompile Include="src\world_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Spring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cpp src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\icon.ico">
