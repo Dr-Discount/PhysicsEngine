@@ -161,7 +161,7 @@ void GuiPhysics(GuiPhysicsState *state)
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 160, 184, 16 }, "BOUNCE", NULL, &state->BodyRestitutionValue, 0, 1);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 184, 184, 16 }, "DAMPING", NULL, &state->BodyDampingValue, 0, 100);
         GuiGroupBox((Rectangle){ state->anchor02.x + 8, state->anchor02.y + 256, 296, 120 }, "SPRING");
-        GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 272, 184, 16 }, "STIFFNESS", NULL, &state->SpringStiffnessValue, 1, 100);
+        GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 272, 184, 16 }, "STIFFNESS", NULL, &state->SpringStiffnessValue, 1, 5);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 296, 184, 16 }, "DAMPING", NULL, &state->SpringDampingValue, 0, 1);
         GuiCheckBox((Rectangle){ state->anchor02.x + 104, state->anchor02.y + 344, 16, 16 }, "AUTO LENGTH", &state->SpringAutoLengthChecked);
         GuiSliderBar((Rectangle){ state->anchor02.x + 80, state->anchor02.y + 320, 184, 16 }, "LENGTH", NULL, &state->SpringLengthValue, 0, 100);

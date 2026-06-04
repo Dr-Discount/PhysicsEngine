@@ -19,7 +19,7 @@ void Spring::Apply(float multiplier) {
 }
 
 void Spring::Draw() {
-	DrawLineV(bodyA->position, bodyB->position, WHITE);
+	DrawLineV(bodyA->position, bodyB->position, RED);
 }
 
 Vector2 Spring::GetSpringForce(Vector2 positionA, Vector2 positionB, float restLength, float stiffness)

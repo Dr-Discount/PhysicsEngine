@@ -90,7 +90,7 @@ int main ()
 	state = InitGuiPhysics();
 	GuiLoadStyle("raygui/styles/dark/style_dark.rgs");
 
-	WorldCamera world_camera(Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }, 40);
+	WorldCamera world_camera(Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }, 100);
 	world.SetBounds(world_camera.ScreenToWorld({ 0, (float)GetScreenHeight() }), world_camera.ScreenToWorld({ (float)GetScreenWidth(), 0 }));
 	world.SetSpringMultiplier(state.SpringStiffnessValue);
 
@@ -128,7 +128,7 @@ int main ()
 				if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
 					if (IsKeyDown(KEY_LEFT_CONTROL)) {
 						Vector2 position = world_camera.ScreenToWorld(GetMousePosition());
-						Vector2 force = Spring::GetSpringForce(position, selectedBody->position, 1.0f, 3.0f);
+						Vector2 force = Spring::GetSpringForce(position, selectedBody->position, 1.0f, state.SpringStiffnessValue);
 						selectedBody->AddForce(force);
 
 						DrawLineV(world_camera.WorldToScreen(position), world_camera.WorldToScreen(selectedBody->position), WHITE);
@@ -140,7 +140,7 @@ int main ()
 				else {
 					if (selectedBody && connectedBody) {
 						float distance = Vector2Distance(selectedBody->position, connectedBody->position);
-						world.AddSpring(*selectedBody, *connectedBody, distance, state.SpringStiffnessValue, state.SpringDampingValue);
+						world.AddSpring(*selectedBody, *connectedBody, 40, state.SpringStiffnessValue, state.SpringDampingValue);
 					}
 					selectedBody = nullptr;
 					connectedBody = nullptr;

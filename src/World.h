@@ -9,7 +9,7 @@
 
 class World {
 public:
-	World() : springMultiplier(1.0f) {}
+	World() {}
 
 	std::vector<Body>& GetBodies() { return bodies; }
 	void Step(float DT);
